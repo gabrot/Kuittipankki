@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuittipankki - {% block title %}{% endblock %}</title>
+    <style>
+        /* Tähän voit lisätä CSS-tyylejä */
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Etusivu</a>
+        {% if 'user_id' in session %}
+            <a href="{{ url_for('lisaa_kuitti') }}">Lisää kuitti</a>
+            <a href="{{ url_for('logout') }}">Kirjaudu ulos</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Kirjaudu sisään</a>
+            <a href="{{ url_for('register') }}">Rekisteröidy</a>
+        {% endif %}
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
