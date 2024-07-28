@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Etusivu{% endblock %}
+
+{% block content %}
+    <h1>Tervetuloa Kuittipankkiin!</h1>
+    {% if kuitit %}
+        <h2>Sinun kuittisi:</h2>
+        <ul>
+        {% for kuitti in kuitit %}
+            <li>
+                {{ kuitti.paivamäärä.strftime('%d.%m.%Y') }} - {{ kuitti.kauppa }} - {{ kuitti.summa }} € ({{ kuitti.kategoria }})
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Sinulla ei ole vielä kuitteja. <a href="{{ url_for('lisaa_kuitti') }}">Lisää ensimmäinen kuitti!</a></p>
+    {% endif %}
+{% endblock %}
