@@ -10,6 +10,9 @@
         {% for kuitti in kuitit %}
             <li>
                 {{ kuitti.paivamäärä.strftime('%d.%m.%Y') }} - {{ kuitti.kauppa }} - {{ kuitti.summa }} € ({{ kuitti.kategoria }})
+                {% if kuitti.tiedosto %}
+                    <a href="{{ url_for('uploaded_file', filename=kuitti.tiedosto) }}" target="_blank">Näytä tiedosto</a>
+                {% endif %}
             </li>
         {% endfor %}
         </ul>

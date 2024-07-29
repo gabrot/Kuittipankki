@@ -1,14 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from functools import wraps
 from datetime import datetime
+from flask_migrate import Migrate
+import os
 
+# Määritellään vakiot
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
+
+# Luodaan Flask-sovellus
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///kuittipankki'
-app.config['SECRET_KEY'] = 'avain_db_secret' 
-db = SQLAlchemy(app)
+app.config['SECRET_KEY'] = 'salainen_avain'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+# Määritellään apufunktiot
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -18,6 +30,10 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Määritellään tietokantamallit
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -30,7 +46,9 @@ class Kuitti(db.Model):
     summa = db.Column(db.Float, nullable=False)
     kategoria = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tiedosto = db.Column(db.String(255))
 
+# Määritellään reitit
 @app.route('/')
 @login_required
 def index():
@@ -48,11 +66,25 @@ def lisaa_kuitti():
             kategoria=request.form['kategoria'],
             user_id=session['user_id']
         )
+        
+        if 'tiedosto' in request.files:
+            file = request.files['tiedosto']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                uusi_kuitti.tiedosto = filename
+
         db.session.add(uusi_kuitti)
         db.session.commit()
         flash('Kuitti lisätty onnistuneesti!', 'success')
         return redirect(url_for('index'))
     return render_template('lisaa_kuitti.html')
+
+@app.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -103,7 +135,10 @@ def unauthorized(error):
     flash('Sinun täytyy kirjautua sisään nähdäksesi tämän sivun.', 'error')
     return redirect(url_for('login'))
 
+# Käynnitettään sovellus
 if __name__ == '__main__':
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
     with app.app_context():
         db.create_all()
     app.run(debug=True)

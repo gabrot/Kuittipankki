@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1>Lisää uusi kuitti</h1>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <div>
             <label for="paivamäärä">Päivämäärä:</label>
             <input type="date" id="paivamäärä" name="paivamäärä" required>
@@ -20,6 +20,10 @@
         <div>
             <label for="kategoria">Kategoria:</label>
             <input type="text" id="kategoria" name="kategoria" required>
+        </div>
+        <div>
+            <label for="tiedosto">Liitä kuittikuva tai tiedosto:</label>
+            <input type="file" id="tiedosto" name="tiedosto">
         </div>
         <button type="submit">Lisää kuitti</button>
     </form>
