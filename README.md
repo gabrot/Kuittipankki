@@ -51,8 +51,8 @@ Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien hallinnan
 
     ### macOS (Homebrew)
     ```sh
-    brew install postgresql
-    brew services start postgresql
+    brew install postgresql@14
+    brew services start postgresql@14
     ```
 
     ### Windows
