@@ -1,36 +1,36 @@
 <!DOCTYPE html>
-<html lang="fi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuittipankki - {% block title %}{% endblock %}</title>
-    <style>
-    </style>
+    <title>{% block title %}Kuittipankki{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('index') }}">Etusivu</a>
-        {% if 'user_id' in session %}
-            <a href="{{ url_for('lisaa_kuitti') }}">Lisää kuitti</a>
-            <a href="{{ url_for('logout') }}">Kirjaudu ulos</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">Kirjaudu sisään</a>
-            <a href="{{ url_for('register') }}">Rekisteröidy</a>
-        {% endif %}
+        <ul>
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            {% if 'user_id' in session %}
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('upload') }}">Upload</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+            {% endif %}
+        </ul>
     </nav>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <main>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
-    </main>
+    </div>
 </body>
 </html>

@@ -30,7 +30,8 @@ Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien hallinnan
 
     ```bash
     python3 -m venv venv
-    source venv/bin/activate
+    source venv/bin/activate  # Linux/Mac
+    venv\Scripts\activate  # Windows
     ```
 
 3. **Asenna riippuvuudet:**
@@ -39,26 +40,57 @@ Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien hallinnan
     pip install -r requirements.txt
     ```
 
-4. **Määritä ympäristömuuttujat:**
+4. **Asenna ja käynnistä PostgreSQL**
+
+    ### Ubuntu/Debian
+    ```sh
+    sudo apt update
+    sudo apt install postgresql postgresql-contrib
+    sudo service postgresql start
+    ```
+
+    ### macOS (Homebrew)
+    ```sh
+    brew install postgresql
+    brew services start postgresql
+    ```
+
+    ### Windows
+    1. Lataa ja asenna PostgreSQL [PostgreSQL Download](https://www.postgresql.org/download/windows/).
+    2. Käynnistä PostgreSQL-palvelin PostgreSQL Shell (psql) -sovelluksella tai Windows-palveluista.
+
+5. **Luo uusi käyttäjä ja tietokanta PostgreSQL:ssä**
+
+    ```sh
+    psql -U postgres
+    ```
+
+    ```sql
+    CREATE USER johndoe WITH PASSWORD 'mysecretpassword';
+    CREATE DATABASE kuittipankki;
+    GRANT ALL PRIVILEGES ON DATABASE kuittipankki TO johndoe;
+    ```
+
+6. **Määritä ympäristömuuttujat:**
 
     Luo `.env`-tiedosto ja lisää seuraavat muuttujat:
 
     ```env
     FLASK_APP=app.py
     FLASK_ENV=development
-    DATABASE_URL=postgresql://username:password@localhost/kuittipankki
+    DATABASE_URL=postgresql://johndoe:mysecretpassword@localhost/kuittipankki
     SECRET_KEY=your_secret_key
     ```
 
     Muokkaa `DATABASE_URL` omien tietokanta-asetustesi mukaan.
 
-5. **Alusta tietokanta:**
+7. **Alusta tietokanta:**
 
     ```bash
     flask db upgrade
     ```
 
-6. **Käynnistä sovellus:**
+8. **Käynnistä sovellus:**
 
     ```bash
     flask run
@@ -89,4 +121,3 @@ Voit testata sovellusta paikallisesti seuraavien ohjeiden mukaisesti:
 - Käyttöliittymän kehittäminen kuittien hallintaa varten.
 - Parannettu virheenkäsittely ja käyttäjäkokemus.
 - Mahdollisuus kuittien muokkaamiseen ja poistamiseen.
-

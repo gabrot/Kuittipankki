@@ -1,19 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Rekisteröidy{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
-    <h1>Rekisteröidy</h1>
-    <form method="POST">
+    <h2>Register</h2>
+    <form method="post" action="{{ url_for('register') }}">
         <div>
-            <label for="username">Käyttäjänimi:</label>
+            <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
         </div>
         <div>
-            <label for="password">Salasana:</label>
+            <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit">Rekisteröidy</button>
+        <button type="submit">Register</button>
     </form>
-    <p>Onko sinulla jo tili? <a href="{{ url_for('login') }}">Kirjaudu sisään</a></p>
 {% endblock %}

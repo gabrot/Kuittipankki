@@ -1,22 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Etusivu{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-    <h1>Tervetuloa Kuittipankkiin!</h1>
-    {% if kuitit %}
-        <h2>Sinun kuittisi:</h2>
-        <ul>
-        {% for kuitti in kuitit %}
-            <li>
-                {{ kuitti.paivamäärä.strftime('%d.%m.%Y') }} - {{ kuitti.kauppa }} - {{ kuitti.summa }} € ({{ kuitti.kategoria }})
-                {% if kuitti.tiedosto %}
-                    <a href="{{ url_for('uploaded_file', filename=kuitti.tiedosto) }}" target="_blank">Näytä tiedosto</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-        </ul>
+    <h1>Welcome to Kuittipankki</h1>
+    <p>Your receipt management solution.</p>
+    {% if receipts %}
+        <h2>Your Uploaded Receipts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Receipt Date</th>
+                    <th>Uploaded On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for receipt in receipts %}
+                    <tr>
+                        <td><a href="{{ url_for('uploaded_file', filename=receipt.filename) }}">{{ receipt.filename }}</a></td>
+                        <td>{{ receipt.description }}</td>
+                        <td>{{ receipt.amount }}</td>
+                        <td>{{ receipt.receipt_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ receipt.upload_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-        <p>Sinulla ei ole vielä kuitteja. <a href="{{ url_for('lisaa_kuitti') }}">Lisää ensimmäinen kuitti!</a></p>
+        <p>You have no uploaded receipts.</p>
     {% endif %}
 {% endblock %}
