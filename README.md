@@ -109,7 +109,7 @@ Voit testata sovellusta paikallisesti seuraavien ohjeiden mukaisesti:
 
 2. **Lisää uusi kuitti:**
 
-    - Kirjautumisen jälkeen voit lisätä uuden kuitin siirtymällä osoitteeseen `/lisaa_kuitti`.
+    - Kirjautumisen jälkeen voit lisätä uuden kuitin siirtymällä osoitteeseen `/upload`.
     - Täytä kuittilomake ja tallenna kuitti tietokantaan.
 
 3. **Tarkastele kuittien listausta:**
