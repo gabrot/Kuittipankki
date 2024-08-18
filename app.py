@@ -1,75 +1,93 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 from datetime import datetime
-from flask_migrate import Migrate
-from dotenv import load_dotenv
 import os
-from forms import ReceiptForm 
+import psycopg2
+from dotenv import load_dotenv
+from forms import ReceiptForm
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
-# Define constants
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
-
-# Initialize Flask application
+# App configuration
 app = Flask(__name__)
-
-# Configuration from environment variables
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['WTF_CSRF_SECRET_KEY'] = os.getenv('WTF_CSRF_SECRET_KEY')
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'pdf'}
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# Database functions
+def get_db_connection():
+    return psycopg2.connect(os.getenv('DATABASE_URL'))
 
-# Import models
-from models import User, Receipt
+def init_db():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    with open('schema.sql', 'r') as f:
+        cur.execute(f.read())
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Database initialized successfully.")
 
-# Utility functions
+# Helper functions
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            session['next'] = request.url
-            return redirect(url_for('login'))
+            flash('Please log in to access this page.', 'error')
+            return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_function
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+# Routes
+@app.route('/')
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        user_id = session['user_id']
-        receipts = Receipt.query.filter_by(user_id=user_id).all()
-    else:
-        receipts = []
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Fetch receipts for logged-in users
+    receipts = []
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM receipts WHERE user_id = %s", (session['user_id'],))
+    receipts = cur.fetchall()
+    cur.close()
+    conn.close()
+    
     return render_template('index.html', receipts=receipts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password, password):
-            session['user_id'] = user.id
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+        if user and check_password_hash(user[2], password):
+            session['user_id'] = user[0]
             flash('Login successful!', 'success')
-            return redirect(url_for('profile'))
-        else:
-            flash('Invalid username or password', 'danger')
+            return redirect(url_for('index'))
+        flash('Invalid username or password', 'error')
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    flash('You have been logged out.', 'success')
+    flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -77,28 +95,30 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
-        # Check if user already exists
-        user = User.query.filter_by(username=username).first()
-        if user:
-            flash('Username already exists. Please choose a different one.', 'error')
-            return redirect(url_for('register'))
-
-        # If user does not exist, create a new one
-        hashed_password = generate_password_hash(password, method='sha256')
-        new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash('Registration successful! You can now log in.', 'success')
-        return redirect(url_for('login'))
-
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+        if cur.fetchone():
+            flash('Username already exists.', 'error')
+        else:
+            hashed_password = generate_password_hash(password)
+            cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+            conn.commit()
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('login'))
+        cur.close()
+        conn.close()
     return render_template('register.html')
 
 @app.route('/profile')
 @login_required
 def profile():
-    user = User.query.filter_by(id=session['user_id']).first()
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT username FROM users WHERE id = %s", (session['user_id'],))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
     return render_template('profile.html', user=user)
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -110,28 +130,31 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-            # Save receipt info to database
-            new_receipt = Receipt(
-                filename=filename,
-                description=form.description.data,
-                amount=form.amount.data,
-                receipt_date=form.receipt_date.data,
-                user_id=session['user_id']
-            )
-            db.session.add(new_receipt)
-            db.session.commit()
-
-            flash('File successfully uploaded', 'success')
+            
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO receipts (filename, description, amount, receipt_date, user_id)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (filename, form.description.data, form.amount.data, form.receipt_date.data, session['user_id']))
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            flash('Receipt uploaded successfully!', 'success')
             return redirect(url_for('index'))
+        else:
+            flash('Invalid file type', 'error')
     return render_template('upload.html', form=form)
 
 @app.route('/uploads/<filename>')
+@login_required
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+# Initialize the app
 with app.app_context():
-    db.create_all()
+    init_db()
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

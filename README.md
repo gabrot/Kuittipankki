@@ -1,21 +1,22 @@
 # Kuittipankki
 
-Kuittipankki on kuittienhallintasovellus, joka on rakennettu Flask'n avulla. Sovellus mahdollistaa kuittien hallinnan, seurannan ja analysoinnin sekä saada yleiskuvan kulutustottumuksistasi.
+Kuittipankki on kuittienhallintasovellus, joka on rakennettu Flask'n avulla. Sovellus mahdollistaa kuittien hallinnan, seurannan ja analysoinnin sekä antaa yleiskuvan kulutustottumuksistasi.
 
 ## Ominaisuudet
 
 - Kuittien lisääminen ja hallinta
 - Kuittien kuvien tallennus ja tarkastelu
-- Kategorioiden ja summien analysointi
+- Kuittien tallennus PostgreSQL-tietokantaan ilman ORM-työkaluja
+- Käyttäjien rekisteröinti ja kirjautuminen
 
 ## Sovelluksen tila
 
 Sovellus on tällä hetkellä varhaisessa kehitysvaiheessa. Seuraavat ominaisuudet on toteutettu:
 - PostgreSQL-tietokanta on integroitu sovellukseen.
-- Perustoiminnallisuudet kuittien lisäämiseksi tietokantaan on luotu.
+- Kaikki tietokantakyselyt on kirjoitettu käsin ilman ORM-työkaluja.
 - Käyttäjien rekisteröinti ja kirjautuminen on mahdollista.
 
-Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien hallinnan ja lisäämisen tietokantaan.
+Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien muokkaamisen ja poistamisen sekä analysoinnin.
 
 ## Asennusohjeet
 
@@ -73,21 +74,24 @@ Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien hallinnan
 
 6. **Määritä ympäristömuuttujat:**
 
-    Luo `.env`-tiedosto ja lisää seuraavat muuttujat:
+    Luo `.env`-tiedosto tai käytä `.env.example`-tiedostoa ja lisää seuraavat muuttujat:
 
     ```env
     FLASK_APP=app.py
     FLASK_ENV=development
     DATABASE_URL=postgresql://johndoe:mysecretpassword@localhost/kuittipankki
     SECRET_KEY=your_secret_key
+    WTF_CSRF_SECRET_KEY=your_csrf_secret_key
     ```
 
     Muokkaa `DATABASE_URL` omien tietokanta-asetustesi mukaan.
 
 7. **Alusta tietokanta:**
 
-    ```bash
-    flask db upgrade
+    Käytä tietokantaskeemaa (schema.sql) alustaaksesi tietokannan:
+
+    ```sh
+    psql -U johndoe -d kuittipankki -f schema.sql
     ```
 
 8. **Käynnistä sovellus:**

@@ -1,8 +1,10 @@
 {% extends "base.html" %}
-
 {% block title %}Profile{% endblock %}
-
 {% block content %}
-    <h2>Profile</h2>
-    <p>Username: {{ user.username }}</p>
+    <h2 class="text-xl font-semibold mb-4">Profile</h2>
+    {% if user %}
+        <p class="mb-2"><strong>Username:</strong> {{ user[0] }}</p>
+    {% else %}
+        <p class="text-red-600">User not found.</p>
+    {% endif %}
 {% endblock %}

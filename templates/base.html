@@ -3,34 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Kuittipankki{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>{% block title %}{% endblock %} - Kuittipankki</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2" defer></script>
 </head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('index') }}">Home</a></li>
-            {% if 'user_id' in session %}
-                <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                <li><a href="{{ url_for('upload') }}">Upload</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            {% else %}
-                <li><a href="{{ url_for('login') }}">Login</a></li>
-                <li><a href="{{ url_for('register') }}">Register</a></li>
-            {% endif %}
+<body class="bg-gray-100">
+
+    {% if 'user_id' in session %}
+    <!-- Sidebar Navigation -->
+    <nav class="w-64 bg-white p-6 fixed h-full shadow-md">
+        <h2 class="text-lg font-bold mb-6">Kuittipankki</h2>
+        <ul class="space-y-4">
+            <li><a href="{{ url_for('login') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Home</a></li>
+            <li><a href="{{ url_for('profile') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Profile</a></li>
+            <li><a href="{{ url_for('upload') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Upload</a></li>
+            <li><a href="{{ url_for('logout') }}" class="block py-2 px-4 text-gray-700 hover:bg-gray-200">Logout</a></li>
         </ul>
     </nav>
-    <div class="container">
+    {% endif %}
+
+    <!-- Main Content Area -->
+    <div class="{% if 'user_id' in session %}ml-72{% endif %} p-6">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <ul class="flashes">
                     {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
+                        <li class="p-4 mb-4 rounded 
+                            {% if category == 'success' %} 
+                                bg-green-100 text-green-700 
+                            {% else %} 
+                                bg-red-100 text-red-700 
+                            {% endif %}">
+                            {{ message }}
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+
 </body>
 </html>

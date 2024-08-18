@@ -1,35 +1,42 @@
 {% extends "base.html" %}
-
 {% block title %}Home{% endblock %}
-
 {% block content %}
-    <h1>Welcome to Kuittipankki</h1>
-    <p>Your receipt management solution.</p>
-    {% if receipts %}
-        <h2>Your Uploaded Receipts</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Filename</th>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Receipt Date</th>
-                    <th>Uploaded On</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for receipt in receipts %}
-                    <tr>
-                        <td><a href="{{ url_for('uploaded_file', filename=receipt.filename) }}">{{ receipt.filename }}</a></td>
-                        <td>{{ receipt.description }}</td>
-                        <td>{{ receipt.amount }}</td>
-                        <td>{{ receipt.receipt_date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ receipt.upload_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>You have no uploaded receipts.</p>
-    {% endif %}
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Receipt Lists</h1>
+        <a href="{{ url_for('upload') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload Receipt</a>
+    </div>
+
+    <div class="search-bar mb-6 p-4 bg-white shadow-sm rounded-lg flex items-center">
+        <input type="text" placeholder="Search receipts..." class="flex-grow p-2 border rounded-md">
+        <select class="ml-4 p-2 border rounded-md">
+            <option>Sort By</option>
+            <option>Date</option>
+            <option>Amount</option>
+        </select>
+    </div>
+
+    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead class="bg-gray-100 text-gray-700">
+            <tr>
+                <th class="py-3 px-4 text-left">Receipt ID</th>
+                <th class="py-3 px-4 text-left">Description</th>
+                <th class="py-3 px-4 text-left">Amount</th>
+                <th class="py-3 px-4 text-left">Receipt Date</th>
+                <th class="py-3 px-4 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for receipt in receipts %}
+            <tr>
+                <td class="py-3 px-4">{{ receipt[0] }}</td> <!-- Receipt ID -->
+                <td class="py-3 px-4">{{ receipt[2] }}</td> <!-- Description -->
+                <td class="py-3 px-4">{{ receipt[3] }}</td> <!-- Amount -->
+                <td class="py-3 px-4">{{ receipt[4].strftime('%Y-%m-%d') }}</td> <!-- Receipt Date -->
+                <td class="py-3 px-4">
+                    <a href="{{ url_for('uploaded_file', filename=receipt[1]) }}" class="text-blue-500 hover:text-blue-700">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

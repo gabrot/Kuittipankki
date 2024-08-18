@@ -1,27 +1,25 @@
 {% extends "base.html" %}
-
-{% block title %}Upload{% endblock %}
-
+{% block title %}Upload Receipt{% endblock %}
 {% block content %}
-    <h2>Upload Receipt</h2>
-    <form method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+    <h2 class="text-xl font-semibold mb-4">Upload Receipt</h2>
+    <form method="POST" enctype="multipart/form-data" class="space-y-4 bg-white p-6 shadow-md rounded-lg">
         {{ form.hidden_tag() }}
         <div>
-            <label for="description">Description:</label>
-            {{ form.description(size=32) }}
+            {{ form.description.label(class="block font-medium text-gray-700") }}
+            {{ form.description(class="mt-1 block w-full p-2 border border-gray-300 rounded-md", size=32) }}
         </div>
         <div>
-            <label for="amount">Amount:</label>
-            {{ form.amount(step="0.01") }}
+            {{ form.amount.label(class="block font-medium text-gray-700") }}
+            {{ form.amount(class="mt-1 block w-full p-2 border border-gray-300 rounded-md", step="0.01") }}
         </div>
         <div>
-            <label for="receipt_date">Date:</label>
-            {{ form.receipt_date() }}
+            {{ form.receipt_date.label(class="block font-medium text-gray-700") }}
+            {{ form.receipt_date(class="mt-1 block w-full p-2 border border-gray-300 rounded-md") }}
         </div>
         <div>
-            <label for="file">Choose file:</label>
-            {{ form.file() }}
+            {{ form.file.label(class="block font-medium text-gray-700") }}
+            {{ form.file(class="mt-1 block w-full p-2 border border-gray-300 rounded-md") }}
         </div>
-        <button type="submit">Upload</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload</button>
     </form>
 {% endblock %}

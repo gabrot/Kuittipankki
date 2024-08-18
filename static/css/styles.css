@@ -1,55 +1,98 @@
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-nav {
-    width: 200px;
-    float: left;
-    padding: 20px;
-}
-
-nav ul {
-    list-style: none;
+    font-family: 'Inter', sans-serif;
+    background-color: #F3F4F6; /* Light gray background */
+    color: #1F2937;
     margin: 0;
     padding: 0;
 }
 
-nav ul li {
-    margin: 10px 0;
+/* Centered Form Layout */
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-nav ul li a {
-    padding: 14px 20px;
-    text-decoration: none;
-    color: black;
+/* Headings */
+h1, h2 {
+    color: #1E3A8A; /* Dark blue heading */
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+/* Buttons */
+button {
+    background-color: #E11D48; /* Primary button color - Red */
+    color: #FFFFFF;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: #BE123C; /* Darker red on hover */
+}
+
+/* Secondary Links */
+.secondary-link {
+    text-align: center;
     display: block;
+    color: #E11D48;
+    text-decoration: none;
+    margin-top: 10px;
 }
 
-.container {
-    margin-left: 220px; /* Tilaa navigoinnille */
-    padding: 20px;
+.secondary-link:hover {
+    color: #BE123C;
 }
 
+/* Checkbox */
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Checkbox Label */
+label.checkbox-label {
+    color: #1F2937;
+    font-size: 14px;
+}
+
+/* Error/Success Message Styling */
 .flashes {
-    list-style: none;
-    padding: 0;
+    margin-bottom: 20px;
 }
 
 .flashes li {
-    margin: 10px 0;
     padding: 10px;
-    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 8px;
 }
 
 .flashes .success {
-    background-color: transparent;
-    color: black;
+    background-color: #D1FAE5;
+    color: #065F46;
 }
 
 .flashes .danger {
-    background-color: transparent;
-    color: black;
+    background-color: #FEE2E2;
+    color: #B91C1C;
 }
