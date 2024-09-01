@@ -4,19 +4,25 @@ Kuittipankki on kuittienhallintasovellus, joka on rakennettu Flask'n avulla. Sov
 
 ## Ominaisuudet
 
-- Kuittien lisääminen ja hallinta
+- Käyttäjien rekisteröinti ja kirjautuminen
+- Kuittien lisääminen, katselu ja poistaminen
 - Kuittien kuvien tallennus ja tarkastelu
 - Kuittien tallennus PostgreSQL-tietokantaan ilman ORM-työkaluja
-- Käyttäjien rekisteröinti ja kirjautuminen
+- Kategorioiden, tagien, maksutapojen ja myyjien hallinta
 
 ## Sovelluksen tila
 
-Sovellus on tällä hetkellä varhaisessa kehitysvaiheessa. Seuraavat ominaisuudet on toteutettu:
+Sovellus on toiminnassa ja sisältää seuraavat ominaisuudet:
 - PostgreSQL-tietokanta on integroitu sovellukseen.
 - Kaikki tietokantakyselyt on kirjoitettu käsin ilman ORM-työkaluja.
-- Käyttäjien rekisteröinti ja kirjautuminen on mahdollista.
+- Käyttäjien rekisteröinti ja kirjautuminen toimii.
+- Kuittien lisääminen, katselu ja poistaminen on mahdollista.
+- Käyttäjät voivat hallita kategorioita, tageja, maksutapoja ja myyjiä.
 
-Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien muokkaamisen ja poistamisen sekä analysoinnin.
+Seuraavat ominaisuudet eivät ole vielä toteutettu:
+- Kuittien muokkaaminen
+- Yksityiskohtaiset raportit ja kulutusanalyysit
+- Kuittien hakutoiminto
 
 ## Asennusohjeet
 
@@ -67,31 +73,39 @@ Seuraavaksi kehitetään käyttöliittymä, joka mahdollistaa kuittien muokkaami
     ```
 
     ```sql
-    CREATE USER johndoe WITH PASSWORD 'mysecretpassword';
-    CREATE DATABASE kuittipankki;
-    GRANT ALL PRIVILEGES ON DATABASE kuittipankki TO johndoe;
+    CREATE USER your_database_username WITH PASSWORD 'your_database_password';
+    CREATE DATABASE your_database_name;
+    GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_database_username;
     ```
 
 6. **Määritä ympäristömuuttujat:**
 
-    Luo `.env`-tiedosto tai käytä `.env.example`-tiedostoa ja lisää seuraavat muuttujat:
+    Kopioi `.env.example`-tiedosto nimellä `.env` ja muokkaa sen sisältöä:
 
-    ```env
-    FLASK_APP=app.py
-    FLASK_ENV=development
-    DATABASE_URL=postgresql://johndoe:mysecretpassword@localhost/kuittipankki
-    SECRET_KEY=your_secret_key
-    WTF_CSRF_SECRET_KEY=your_csrf_secret_key
+    ```bash
+    cp .env.example .env
     ```
 
-    Muokkaa `DATABASE_URL` omien tietokanta-asetustesi mukaan.
+    Avaa `.env`-tiedosto ja muokkaa seuraavat muuttujat:
+
+    ```env
+    DB_NAME=your_database_name
+    DB_USER=your_database_username
+    DB_PASSWORD=your_database_password
+    DB_HOST=localhost
+    DB_PORT=5432
+    SECRET_KEY=your_secret_key_here
+    WTF_CSRF_SECRET_KEY=your_csrf_secret_key_here
+    ```
+
+    Korvaa `your_database_name`, `your_database_username`, ja `your_database_password` omilla tietokanta-asetuksillasi. Aseta myös `SECRET_KEY` ja `WTF_CSRF_SECRET_KEY` uniikkeihin, turvallisiin arvoihin.
 
 7. **Alusta tietokanta:**
 
     Käytä tietokantaskeemaa (schema.sql) alustaaksesi tietokannan:
 
     ```sh
-    psql -U johndoe -d kuittipankki -f schema.sql
+    psql -U your_database_username -d your_database_name -f schema.sql
     ```
 
 8. **Käynnistä sovellus:**
@@ -118,10 +132,16 @@ Voit testata sovellusta paikallisesti seuraavien ohjeiden mukaisesti:
 
 3. **Tarkastele kuittien listausta:**
 
-    - Pääsivulla (`/`) voit tarkastella kaikkia lisättyjä kuitteja.
+    - Pääsivulla (`/`) voit tarkastella kaikkia lisäämiäsi kuitteja.
+
+4. **Hallinnoi kategorioita, tageja, maksutapoja ja myyjiä:**
+
+    - Siirry osoitteeseen `/manage` hallinnoidaksesi näitä tietoja.
 
 ## Tulevat kehityssuunnitelmat
 
-- Käyttöliittymän kehittäminen kuittien hallintaa varten.
-- Parannettu virheenkäsittely ja käyttäjäkokemus.
-- Mahdollisuus kuittien muokkaamiseen ja poistamiseen.
+- Kuittien muokkaamistoiminnon lisääminen.
+- Tiedostojen automaattisen nimeämisen lisääminen.
+- Yksityiskohtaisten raporttien ja kulutusanalyysien kehittäminen.
+- Kuittien hakutoiminnon toteuttaminen.
+- Käyttöliittymän jatkokehitys ja käyttäjäkokemuksen parantaminen.

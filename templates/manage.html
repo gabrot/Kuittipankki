@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Manage Resources{% endblock %}
+{% block content %}
+
+<div class="container mx-auto mt-8">
+    <h1 class="text-3xl font-bold mb-6">Manage Your Resources</h1>
+    <p class="mb-6">Use this page to add or delete categories, tags, payment methods, and vendors that will be associated with your receipts.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Categories Section -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Categories</h2>
+            <form method="POST" action="{{ url_for('manage') }}">
+                {{ category_form.hidden_tag() }}
+                <div class="mb-4">
+                    {{ category_form.name.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ category_form.name(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <div class="mb-4">
+                    {{ category_form.description.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ category_form.description(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <button type="submit" name="add_category" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Category</button>
+            </form>
+            <ul class="mt-6">
+                {% for category in categories %}
+                <li class="flex justify-between items-center mb-2">
+                    <span class="text-sm">{{ category.name }}</span>
+                    <form method="POST" action="{{ url_for('manage') }}">
+                        {{ category_form.hidden_tag() }}
+                        <input type="hidden" name="delete_category" value="{{ category.id }}">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Tags Section -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Tags</h2>
+            <form method="POST" action="{{ url_for('manage') }}">
+                {{ tag_form.hidden_tag() }}
+                <div class="mb-4">
+                    {{ tag_form.name.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ tag_form.name(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <button type="submit" name="add_tag" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Tag</button>
+            </form>
+            <ul class="mt-6">
+                {% for tag in tags %}
+                <li class="flex justify-between items-center mb-2">
+                    <span class="text-sm">{{ tag.name }}</span>
+                    <form method="POST" action="{{ url_for('manage') }}">
+                        {{ tag_form.hidden_tag() }}
+                        <input type="hidden" name="delete_tag" value="{{ tag.id }}">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Payment Methods Section -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Payment Methods</h2>
+            <form method="POST" action="{{ url_for('manage') }}">
+                {{ payment_method_form.hidden_tag() }}
+                <div class="mb-4">
+                    {{ payment_method_form.name.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ payment_method_form.name(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <div class="mb-4">
+                    {{ payment_method_form.description.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ payment_method_form.description(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <button type="submit" name="add_payment_method" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Payment Method</button>
+            </form>
+            <ul class="mt-6">
+                {% for payment_method in payment_methods %}
+                <li class="flex justify-between items-center mb-2">
+                    <span class="text-sm">{{ payment_method.name }}</span>
+                    <form method="POST" action="{{ url_for('manage') }}">
+                        {{ payment_method_form.hidden_tag() }}
+                        <input type="hidden" name="delete_payment_method" value="{{ payment_method.id }}">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Vendors Section -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Vendors</h2>
+            <form method="POST" action="{{ url_for('manage') }}">
+                {{ vendor_form.hidden_tag() }}
+                <div class="mb-4">
+                    {{ vendor_form.name.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ vendor_form.name(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <div class="mb-4">
+                    {{ vendor_form.address.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ vendor_form.address(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <div class="mb-4">
+                    {{ vendor_form.phone.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ vendor_form.phone(class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md") }}
+                </div>
+                <button type="submit" name="add_vendor" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Vendor</button>
+            </form>
+            <ul class="mt-6">
+                {% for vendor in vendors %}
+                <li class="flex justify-between items-center mb-2">
+                    <span class="text-sm">{{ vendor.name }}</span>
+                    <form method="POST" action="{{ url_for('manage') }}">
+                        {{ vendor_form.hidden_tag() }}
+                        <input type="hidden" name="delete_vendor" value="{{ vendor.id }}">
+                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">Delete</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,6 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Reports{% endblock %}
+{% block title %}Spending Reports{% endblock %}
 {% block content %}
-    <h2 class="text-xl font-semibold mb-4">Reports</h2>
-    <p>Here you can view your receipt reports.</p>
+<div class="container mt-5">
+    <h1 class="mb-4">Spending Reports</h1>
+    
+    <form method="POST" class="mb-4">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-md-4">
+                {{ form.start_date.label(class="form-label") }}
+                {{ form.start_date(class="form-control") }}
+            </div>
+            <div class="col-md-4">
+                {{ form.end_date.label(class="form-label") }}
+                {{ form.end_date(class="form-control") }}
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Generate Report</button>
+            </div>
+        </div>
+    </form>
+
+    {% if spending_by_category %}
+        <h2 class="mt-4">Spending by Category</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Total Spent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in spending_by_category %}
+                <tr>
+                    <td>{{ category.category }}</td>
+                    <td>{{ "%.2f"|format(category.total) }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif form.errors %}
+        <div class="alert alert-danger">
+            Please correct the errors in the form.
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

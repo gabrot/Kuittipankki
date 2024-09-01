@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}View Receipt{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <h1 class="text-3xl font-bold mb-6">Receipt Details</h1>
+
+    {% if receipt %}
+    <div class="mb-4">
+        <h2 class="font-bold text-xl mb-2">{{ receipt.description|escape }}</h2>
+        <p>Amount: {{ "%.2f"|format(receipt.amount) }} €</p>
+        <p>Date: {{ receipt.receipt_date.strftime('%Y-%m-%d') }}</p>
+        <p>Category: {{ receipt.category_name }}</p>
+        <p>Vendor: {{ receipt.vendor_name }}</p>
+        <p>Payment Method: {{ receipt.payment_method_name }}</p>
+        <p>Upload Date: {{ receipt.upload_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    </div>
+
+    <div class="mb-4">
+        <h3 class="font-bold text-lg mb-2">Receipt Image</h3>
+        <img src="{{ url_for('uploaded_file', filename=receipt.filename) }}" alt="Receipt Image" class="max-w-full h-auto">
+    </div>
+
+    <a href="{{ url_for('index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Back to Receipts</a>
+    {% else %}
+    <p>Receipt not found.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,25 +1,58 @@
 {% extends "base.html" %}
 {% block title %}Upload Receipt{% endblock %}
 {% block content %}
+
+<div class="container mx-auto mt-8">
     <h2 class="text-xl font-semibold mb-4">Upload Receipt</h2>
-    <form method="POST" enctype="multipart/form-data" class="space-y-4 bg-white p-6 shadow-md rounded-lg">
+
+    <p class="mb-4 text-gray-600">
+        Before uploading a receipt, please ensure that you have filled in all the necessary metadata: 
+        categories, tags, payment methods, and vendors. You can do this on the 
+        <a href="{{ url_for('manage') }}" class="text-blue-500 underline">Metadata page</a>.
+    </p>
+
+    <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-        <div>
-            {{ form.description.label(class="block font-medium text-gray-700") }}
-            {{ form.description(class="mt-1 block w-full p-2 border border-gray-300 rounded-md", size=32) }}
+
+        {% for field in [form.description, form.amount, form.receipt_date, form.category, form.vendor, form.payment_method, form.tags] %}
+            <div class="mb-4">
+                {{ field.label(class="block font-medium text-gray-700") }}
+                {{ field(class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500") }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="mb-4">
+            <label class="block font-medium text-gray-700" for="file">Receipt File</label>
+            <input class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" id="file" name="file" onchange="previewImage(event)" required="" type="file">
+            <img id="imagePreview" src="#" alt="Receipt Preview" style="display: none; max-width: 300px; margin-top: 10px;">
         </div>
-        <div>
-            {{ form.amount.label(class="block font-medium text-gray-700") }}
-            {{ form.amount(class="mt-1 block w-full p-2 border border-gray-300 rounded-md", step="0.01") }}
-        </div>
-        <div>
-            {{ form.receipt_date.label(class="block font-medium text-gray-700") }}
-            {{ form.receipt_date(class="mt-1 block w-full p-2 border border-gray-300 rounded-md") }}
-        </div>
-        <div>
-            {{ form.file.label(class="block font-medium text-gray-700") }}
-            {{ form.file(class="mt-1 block w-full p-2 border border-gray-300 rounded-md") }}
-        </div>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload</button>
+
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Upload Receipt
+        </button>
     </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        var input = event.target;
+        var reader = new FileReader();
+        reader.onload = function(){
+            var dataURL = reader.result;
+            var output = document.getElementById('imagePreview');
+            output.src = dataURL;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    // Lisätään onchange-tapahtumankäsittelijä tiedoston latauskentälle
+    document.getElementById('file').addEventListener('change', previewImage);
+</script>
+
 {% endblock %}
